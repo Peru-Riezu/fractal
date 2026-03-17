@@ -1,14 +1,24 @@
-import { stateOfMainDisplay } from "./stateOfMainDisplay";
-import { resize } from "./resize";
+import type { MainDisplayState } from "./stateOfMainDisplay";
 
-export async function toggleFullscreen() : Promise<void>
+export async function toggleFullscreen(stateOfMainDisplay : MainDisplayState) : Promise<void>
 {
-	stateOfMainDisplay.goingFullScreen = true;
-	await document.getElementById("main_display")!.requestFullscreen();
-	if (document.fullscreenElement == document.getElementById("main_display"))
+	if (stateOfMainDisplay.mainDisplayElement.value == null)
 	{
-		stateOfMainDisplay.onFullscreenMode.value = true;
-		resize();
+		return;
+	}
+
+	try
+	{
+		if (document.fullscreenElement === stateOfMainDisplay.mainDisplayElement.value)
+		{
+			await document.exitFullscreen();
+			return;
+		}
+		await stateOfMainDisplay.mainDisplayElement.value.requestFullscreen();
+	}
+	catch
+	{
+		stateOfMainDisplay.onFullscreenMode.value =
+			document.fullscreenElement === stateOfMainDisplay.mainDisplayElement.value;
 	}
 }
-

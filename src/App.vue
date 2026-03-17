@@ -2,7 +2,13 @@
 	import MainDisplay from "./mainDisplay/MainDisplay.vue";
 	import Parameters from "./parameters/Parameters.vue";
 	import PixelData from "./pixelData/PixelData.vue";
+	import { createStateOfMainDisplay, type MainDisplayState } from "./mainDisplay/stateOfMainDisplay";
+	import { createStateOfParameters, type ParametersState } from "./parameters/stateOfParameters";
+	import { createStateOfPixelData, type PixelDataState } from "./pixelData/stateOfPixelData";
 
+	const mainDisplayState : MainDisplayState  = createStateOfMainDisplay();
+	const parametersState : ParametersState = createStateOfParameters();
+	const pixelDataState : PixelDataState = createStateOfPixelData();
 </script>
 
 <template>
@@ -10,10 +16,21 @@
 		<h1 id="title">
 			Fractal
 		</h1>
-		<MainDisplay />
+		<MainDisplay
+			:main-display-state="mainDisplayState"
+			:parameters-state="parametersState"
+			:pixel-data-state="pixelDataState"
+		/>
 		<div id="footer">
-			<Parameters />
-			<PixelData />
+			<Parameters
+				:scale-field="parametersState.scale"
+				:x-of-origin-field="parametersState.xOfOrigin"
+				:y-of-origin-field="parametersState.yOfOrigin"
+				:scape-radius-field="parametersState.scapeRadius"
+				:max-iterations-field="parametersState.maxIterations"
+				:antialias-level-field="parametersState.antialiasLevel"
+			/>
+			<PixelData :pixel-data-state="pixelDataState" />
 		</div>
 	</div>
 </template>

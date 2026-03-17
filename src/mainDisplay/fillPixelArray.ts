@@ -1,3 +1,5 @@
+import { viewportPointToComplex, type ComplexPoint } from "./complexPlane";
+
 type Color = {r : number, g : number, b : number};
 
 const colorTable : Array<Color> =
@@ -153,15 +155,18 @@ function getIterationsFromPos
 	maxIterations : number
 ) : number
 {
-	const currentNormalizedX : number = ((column / (dprAdjustedWidth - 1)) * 2) - 1;
-	const currentNormalizedY : number = ((row / (dprAdjustedHeigth - 1)) * -2) + 1;
-	const scaleOfXtoY: number = (1 / dprAdjustedHeigth) * dprAdjustedWidth;
-	const currentScaledX : number = currentNormalizedX * (scale / 2) * scaleOfXtoY;
-	const currentScaledY : number = currentNormalizedY * (scale / 2);
-	const currentPositonAdjustedX : number = currentScaledX + x;
-	const currentPositonAdjustedY : number = currentScaledY + y;
+	const currentPositonAdjusted : ComplexPoint = viewportPointToComplex
+	(
+		column,
+		row,
+		dprAdjustedWidth,
+		dprAdjustedHeigth,
+		scale,
+		x,
+		y
+	);
 	const countOfIterationsOfPoint : number =
-		countIterationsOfPoint(currentPositonAdjustedX, currentPositonAdjustedY, scapeRadius, maxIterations);
+		countIterationsOfPoint(currentPositonAdjusted.x, currentPositonAdjusted.y, scapeRadius, maxIterations);
 
 	return (countOfIterationsOfPoint);
 }
@@ -180,171 +185,64 @@ function getAntialiasedColorOfPoint
 	antialiasLevel : number
 ) : Color
 {
-	let finalColor : Color = {r: 0, g: 0, b: 0};
-	let aux : Color;
+	let red : number = 0;
+	let green : number = 0;
+	let blue : number = 0;
+	let sampleCount : number = 0;
 
-	aux =
-		getColorFromIterations
-		(
-			getIterationsFromPos(column, row, dprAdjustedWidth, dprAdjustedHeigth, scale, x, y, scapeRadius, maxIterations)
-		);
-	finalColor = {r: finalColor.r + aux.r, g: finalColor.g + aux.g, b: finalColor.b + aux.b};
+	function addSample(sampleColumn : number, sampleRow : number) : void
+	{
+		const color : Color =
+			getColorFromIterations
+			(
+				getIterationsFromPos
+				(
+					sampleColumn,
+					sampleRow,
+					dprAdjustedWidth,
+					dprAdjustedHeigth,
+					scale,
+					x,
+					y,
+					scapeRadius,
+					maxIterations
+				)
+			);
+
+		red += color.r;
+		green += color.g;
+		blue += color.b;
+		sampleCount++;
+	}
+
+	addSample(column, row);
 
 	for (let i : number = 0; i < antialiasLevel; i++)
 	{
-		aux =
-			getColorFromIterations
-			(
-				getIterationsFromPos
-				(
-					column,
-					row + (1 / 2 / (antialiasLevel + 1) * (i + 1)),
-					dprAdjustedWidth,
-					dprAdjustedHeigth,
-					scale,
-					x,
-					y,
-					scapeRadius,
-					maxIterations
-				)
-			);
-		finalColor = {r: finalColor.r + aux.r, g: finalColor.g + aux.g, b: finalColor.b + aux.b};
+		const offset : number = (1 / 2 / (antialiasLevel + 1)) * (i + 1);
+		const sampleOffsets : Array<{columnOffset : number, rowOffset : number}> =
+		[
+			{columnOffset: 0, rowOffset: offset},
+			{columnOffset: 0, rowOffset: -offset},
+			{columnOffset: offset, rowOffset: offset},
+			{columnOffset: offset, rowOffset: -offset},
+			{columnOffset: offset, rowOffset: 0},
+			{columnOffset: -offset, rowOffset: offset},
+			{columnOffset: -offset, rowOffset: -offset},
+			{columnOffset: -offset, rowOffset: 0}
+		];
 
-		aux =
-			getColorFromIterations
-			(
-				getIterationsFromPos
-				(
-					column,
-					row - (1 / 2 / (antialiasLevel + 1) * (i + 1)),
-					dprAdjustedWidth,
-					dprAdjustedHeigth,
-					scale,
-					x,
-					y,
-					scapeRadius,
-					maxIterations
-				)
-			);
-		finalColor = {r: finalColor.r + aux.r, g: finalColor.g + aux.g, b: finalColor.b + aux.b};
-
-		aux =
-			getColorFromIterations
-			(
-				getIterationsFromPos
-				(
-					column + (1 / 2 / (antialiasLevel + 1) * (i + 1)),
-					row + (1 / 2 / (antialiasLevel + 1) * (i + 1)),
-					dprAdjustedWidth,
-					dprAdjustedHeigth,
-					scale,
-					x,
-					y,
-					scapeRadius,
-					maxIterations
-				)
-			);
-		finalColor = {r: finalColor.r + aux.r, g: finalColor.g + aux.g, b: finalColor.b + aux.b};
-
-		aux =
-			getColorFromIterations
-			(
-				getIterationsFromPos
-				(
-					column + (1 / 2 / (antialiasLevel + 1) * (i + 1)),
-					row - (1 / 2 / (antialiasLevel + 1) * (i + 1)),
-					dprAdjustedWidth,
-					dprAdjustedHeigth,
-					scale,
-					x,
-					y,
-					scapeRadius,
-					maxIterations
-				)
-			);
-		finalColor = {r: finalColor.r + aux.r, g: finalColor.g + aux.g, b: finalColor.b + aux.b};
-
-		aux =
-			getColorFromIterations
-			(
-				getIterationsFromPos
-				(
-					column + (1 / 2 / (antialiasLevel + 1) * (i + 1)),
-					row,
-					dprAdjustedWidth,
-					dprAdjustedHeigth,
-					scale,
-					x,
-					y,
-					scapeRadius,
-					maxIterations
-				)
-			);
-		finalColor = {r: finalColor.r + aux.r, g: finalColor.g + aux.g, b: finalColor.b + aux.b};
-
-		aux =
-			getColorFromIterations
-			(
-				getIterationsFromPos
-				(
-					column - (1 / 2 / (antialiasLevel + 1) * (i + 1)),
-					row + (1 / 2 / (antialiasLevel + 1) * (i + 1)),
-					dprAdjustedWidth,
-					dprAdjustedHeigth,
-					scale,
-					x,
-					y,
-					scapeRadius,
-					maxIterations
-				)
-			);
-		finalColor = {r: finalColor.r + aux.r, g: finalColor.g + aux.g, b: finalColor.b + aux.b};
-
-		aux =
-			getColorFromIterations
-			(
-				getIterationsFromPos
-				(
-					column - (1 / 2 / (antialiasLevel + 1) * (i + 1)),
-					row - (1 / 2 / (antialiasLevel + 1) * (i + 1)),
-					dprAdjustedWidth,
-					dprAdjustedHeigth,
-					scale,
-					x,
-					y,
-					scapeRadius,
-					maxIterations
-				)
-			);
-		finalColor = {r: finalColor.r + aux.r, g: finalColor.g + aux.g, b: finalColor.b + aux.b};
-
-		aux =
-			getColorFromIterations
-			(
-				getIterationsFromPos
-				(
-					column - (1 / 2 / (antialiasLevel + 1) * (i + 1)),
-					row,
-					dprAdjustedWidth,
-					dprAdjustedHeigth,
-					scale,
-					x,
-					y,
-					scapeRadius,
-					maxIterations
-				)
-			);
-		finalColor = {r: finalColor.r + aux.r, g: finalColor.g + aux.g, b: finalColor.b + aux.b};
+		for (const sampleOffset of sampleOffsets)
+		{
+			addSample(column + sampleOffset.columnOffset, row + sampleOffset.rowOffset);
+		}
 	}
 
-	finalColor=
-	{
-		r: finalColor.r / (antialiasLevel * 8 + 1),
-		g: finalColor.g / (antialiasLevel * 8 + 1),
-		b: finalColor.b / (antialiasLevel * 8 + 1)
-	}
-
-	return (finalColor);
+	return ({
+		r: red / sampleCount,
+		g: green / sampleCount,
+		b: blue / sampleCount
+	});
 }
 
 export function fillPixelArray

@@ -13,8 +13,8 @@ export class NumericField
 
 	updateIfInputValid() : void
 	{
-		const trimmed : string = this.input.value.trim()
-		const parsed : number = Number(trimmed)
+		const trimmed : string = this.input.value.trim();
+		const parsed : number = Number(trimmed);
 
 		if (!trimmed || !Number.isFinite(parsed))
 		{
@@ -22,7 +22,12 @@ export class NumericField
 		}
 
 		this.value.value = parsed;
-		return;
+	}
+
+	setInput(newInput : string) : void
+	{
+		this.input.value = newInput;
+		this.updateIfInputValid();
 	}
 
 	update(newValue : number) : void

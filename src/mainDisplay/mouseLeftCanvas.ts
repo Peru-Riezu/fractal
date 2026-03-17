@@ -1,22 +1,26 @@
-import { stateOfMainDisplay } from "./stateOfMainDisplay";
-import { stateOfPixelData } from "@/pixelData/stateOfPixelData";
+import type { MainDisplayState } from "./stateOfMainDisplay";
+import type { PixelDataState } from "@/pixelData/stateOfPixelData";
 
-export function mouseLeftCanvas(e : PointerEvent) : void
+export function mouseLeftCanvas(e : PointerEvent, stateOfMainDisplay : MainDisplayState, stateOfPixelData : PixelDataState) : void
 {
-	const rect : DOMRect = stateOfMainDisplay.canvasElement.value!.getBoundingClientRect();
+	if (stateOfMainDisplay.canvasElement.value == null)
+	{
+		return;
+	}
+
+	const rect : DOMRect = stateOfMainDisplay.canvasElement.value.getBoundingClientRect();
 
 	if ((e.clientX < rect.left || e.clientY < rect.top || e.clientX > rect.right || e.clientY > rect.bottom) == false)
 	{
 		return;
 	}
 
-	stateOfMainDisplay.mousedown = false;
+	stateOfMainDisplay.showFullScreenButton.value = false;
 
-	if (e.altKey == true)
+	if (stateOfMainDisplay.mousedown == true || e.altKey == true)
 	{
 		return;
 	}
 
 	stateOfPixelData.valuesOfEachIteration.value = undefined;
-	stateOfMainDisplay.showFullScreenButton.value = false;
 }

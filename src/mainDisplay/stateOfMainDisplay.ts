@@ -1,8 +1,8 @@
 import { type Ref, ref } from "vue";
 
-export const stateOfMainDisplay :
+export type MainDisplayState =
 {
-	goingFullScreen : boolean,
+	mainDisplayElement : Ref<HTMLDivElement | null>,
 	canvasElement : Ref<HTMLCanvasElement | null>,
 	frameIsRendering : Ref<boolean>,
 	showFullScreenButton : Ref<boolean>,
@@ -14,20 +14,24 @@ export const stateOfMainDisplay :
 	mousedown : boolean,
 	xOfPosOnmousedown : number,
 	yOfPosOnmousedown : number
-}
-=
-{
-	goingFullScreen: false,
-	canvasElement: ref(null),
-	showFullScreenButton: ref(false),
-	onFullscreenMode: ref(false),
-	frameIsRendering: ref(false),
-	dprAdjustedHeigthOfCanvas: null,
-	dprAdjustedWidthOfCanvas: null,
-	renderingWorker: null,
-	canvasRenderingContext: null,
-	mousedown: false,
-	xOfPosOnmousedown: 0,
-	yOfPosOnmousedown: 0
 };
 
+export function createStateOfMainDisplay() : MainDisplayState
+{
+	return (
+		{
+			mainDisplayElement: ref(null),
+			canvasElement: ref(null),
+			showFullScreenButton: ref(false),
+			onFullscreenMode: ref(false),
+			frameIsRendering: ref(false),
+			dprAdjustedHeigthOfCanvas: null,
+			dprAdjustedWidthOfCanvas: null,
+			renderingWorker: null,
+			canvasRenderingContext: null,
+			mousedown: false,
+			xOfPosOnmousedown: 0,
+			yOfPosOnmousedown: 0
+		}
+	);
+}

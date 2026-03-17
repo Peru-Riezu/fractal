@@ -1,28 +1,31 @@
-import { stateOfMainDisplay } from "./stateOfMainDisplay";
-import { stateOfPixelData } from "../pixelData/stateOfPixelData.ts";
-import { stateOfParameters } from "../parameters/stateOfParameters.ts";
+import type { MainDisplayState } from "./stateOfMainDisplay";
+import type { ParametersState } from "../parameters/stateOfParameters.ts";
+import { clientPointToComplex } from "./canvasPointer";
+import type {ComplexPoint} from "./complexPlane.ts";
 
-export function dragFrame(e : MouseEvent) : void
+export function dragFrame(e : PointerEvent, stateOfMainDisplay : MainDisplayState, stateOfParameters : ParametersState) : void
 {
-	const rect : DOMRect = stateOfMainDisplay.canvasElement.value!.getBoundingClientRect();
-	const column : number = Math.floor(e.clientX - rect.left);
-	const row : number = Math.floor(e.clientY - rect.top);
-
-	if (e.clientX < rect.left || e.clientY < rect.top || e.clientX > rect.right || e.clientY > rect.bottom)
+	if (stateOfMainDisplay.canvasElement.value == null)
 	{
-		stateOfMainDisplay.mousedown = false;
-		stateOfPixelData.valuesOfEachIteration.value = undefined;
 		return;
 	}
 
-	const currentNormalizedX : number = ((column / (stateOfMainDisplay.canvasElement.value!.clientWidth - 1)) * 2) - 1;
-	const currentNormalizedY : number = ((row / (stateOfMainDisplay.canvasElement.value!.clientHeight - 1)) * -2) + 1;
-	const scaleOfXtoY: number =
-		(1 / stateOfMainDisplay.canvasElement.value!.clientHeight) * stateOfMainDisplay.canvasElement.value!.clientWidth;
-	const currentScaledX : number = currentNormalizedX * (stateOfParameters.scale.value.value / 2) * scaleOfXtoY;
-	const currentScaledY : number = currentNormalizedY * (stateOfParameters.scale.value.value / 2);
+	const currentPosition : ComplexPoint = clientPointToComplex
+	(
+		e.clientX,
+		e.clientY,
+		stateOfMainDisplay.canvasElement.value,
+		stateOfParameters.scale.value.value,
+		stateOfParameters.xOfOrigin.value.value,
+		stateOfParameters.yOfOrigin.value.value
+	);
 
-	stateOfParameters.xOfOrigin.update(stateOfMainDisplay.xOfPosOnmousedown - currentScaledX);
-	stateOfParameters.yOfOrigin.update(stateOfMainDisplay.yOfPosOnmousedown - currentScaledY);
+	stateOfParameters.xOfOrigin.update
+	(
+		stateOfMainDisplay.xOfPosOnmousedown - currentPosition.x + stateOfParameters.xOfOrigin.value.value
+	);
+	stateOfParameters.yOfOrigin.update
+	(
+		stateOfMainDisplay.yOfPosOnmousedown - currentPosition.y + stateOfParameters.yOfOrigin.value.value
+	);
 }
-

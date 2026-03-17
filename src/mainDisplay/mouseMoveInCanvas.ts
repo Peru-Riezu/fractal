@@ -1,35 +1,55 @@
-import { stateOfMainDisplay } from "./stateOfMainDisplay.ts";
+import type { MainDisplayState } from "./stateOfMainDisplay.ts";
 import { dragFrame } from "./dragFrame.ts";
-import {stateOfPixelData} from "@/pixelData/stateOfPixelData";
-import { stateOfParameters } from "@/parameters/stateOfParameters";
+import type { PixelDataState } from "@/pixelData/stateOfPixelData";
+import type { ParametersState } from "@/parameters/stateOfParameters";
 import { getIterationsOfPoint } from "@/pixelData/getIterationsOfPoint.ts";
+import { clientPointToComplex } from "./canvasPointer";
+import type {ComplexPoint} from "./complexPlane.ts";
 
-export function mouseMoveInCanvas(e : MouseEvent) : void
+export function mouseMoveInCanvas
+(
+	e : PointerEvent,
+	stateOfMainDisplay : MainDisplayState,
+	stateOfParameters : ParametersState,
+	stateOfPixelData : PixelDataState
+) : void
 {
 	if (e.altKey == true)
 	{
+		if
+		(
+			stateOfMainDisplay.canvasElement.value != null
+			&&
+			stateOfMainDisplay.canvasElement.value.hasPointerCapture(e.pointerId)
+		)
+		{
+			stateOfMainDisplay.canvasElement.value.releasePointerCapture(e.pointerId);
+		}
 		stateOfMainDisplay.mousedown = false;
 		return;
 	}
 
 	if (stateOfMainDisplay.mousedown == true)
 	{
-		dragFrame(e);
+		dragFrame(e, stateOfMainDisplay, stateOfParameters);
 		return;
 	}
 
-	const rect : DOMRect = stateOfMainDisplay.canvasElement.value!.getBoundingClientRect();
-	const column : number = Math.floor(e.clientX - rect.left);
-	const row : number = Math.floor(e.clientY - rect.top);
-	const currentNormalizedX : number = ((column / (stateOfMainDisplay.canvasElement.value!.clientWidth - 1)) * 2) - 1;
-	const currentNormalizedY : number = ((row / (stateOfMainDisplay.canvasElement.value!.clientHeight - 1)) * -2) + 1;
-	const scaleOfXtoY: number =
-		(1 / stateOfMainDisplay.canvasElement.value!.clientHeight) * stateOfMainDisplay.canvasElement.value!.clientWidth;
-	const currentScaledX : number = currentNormalizedX * (stateOfParameters.scale.value.value / 2) * scaleOfXtoY;
-	const currentScaledY : number = currentNormalizedY * (stateOfParameters.scale.value.value / 2);
-	const currentPositonAdjustedX : number = currentScaledX + stateOfParameters.xOfOrigin.value.value;
-	const currentPositonAdjustedY : number = currentScaledY + stateOfParameters.yOfOrigin.value.value;
+	if (stateOfMainDisplay.canvasElement.value == null)
+	{
+		return;
+	}
 
-	stateOfMainDisplay.showFullScreenButton.value = true;
-	stateOfPixelData.valuesOfEachIteration.value = getIterationsOfPoint(currentPositonAdjustedX, currentPositonAdjustedY);
+	const currentPosition : ComplexPoint = clientPointToComplex
+	(
+		e.clientX,
+		e.clientY,
+		stateOfMainDisplay.canvasElement.value,
+		stateOfParameters.scale.value.value,
+		stateOfParameters.xOfOrigin.value.value,
+		stateOfParameters.yOfOrigin.value.value
+	);
+
+	stateOfMainDisplay.showFullScreenButton.value = stateOfMainDisplay.onFullscreenMode.value == false;
+	stateOfPixelData.valuesOfEachIteration.value = getIterationsOfPoint(currentPosition.x, currentPosition.y, stateOfParameters);
 }

@@ -1,6 +1,6 @@
-import { stateOfParameters } from "../parameters/stateOfParameters.ts";
+import type { ParametersState } from "../parameters/stateOfParameters.ts";
 
-export function getIterationsOfPoint(x : number, y : number) : Array<string>
+export function getIterationsOfPoint(x : number, y : number, stateOfParameters : ParametersState) : Array<string>
 {
 	const res : Array<string> = new Array<string>();
 	let count : number = 1;

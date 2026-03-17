@@ -1,13 +1,10 @@
-import { stateOfMainDisplay } from "./stateOfMainDisplay";
-import { resize } from "./resize";
+import type { MainDisplayState } from "./stateOfMainDisplay";
 
-export function onFullscreenChange() : void
+export function onFullscreenChange(stateOfMainDisplay : MainDisplayState) : void
 {
-	if (stateOfMainDisplay.goingFullScreen != true)
+	stateOfMainDisplay.onFullscreenMode.value = document.fullscreenElement === stateOfMainDisplay.mainDisplayElement.value;
+	if (stateOfMainDisplay.onFullscreenMode.value == true)
 	{
-		stateOfMainDisplay.onFullscreenMode.value = false;
-		resize();
+		stateOfMainDisplay.showFullScreenButton.value = false;
 	}
-	stateOfMainDisplay.goingFullScreen = false;
 }
-

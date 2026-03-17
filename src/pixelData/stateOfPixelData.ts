@@ -1,11 +1,15 @@
 import { type Ref, ref } from "vue";
 
-export const stateOfPixelData :
+export type PixelDataState =
 {
 	valuesOfEachIteration : Ref<Array<string> | undefined>
-}
-=
-{
-	valuesOfEachIteration: ref(undefined)
 };
 
+export function createStateOfPixelData() : PixelDataState
+{
+	return (
+		{
+			valuesOfEachIteration: ref(undefined)
+		}
+	);
+}

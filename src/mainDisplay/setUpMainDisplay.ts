@@ -1,16 +1,19 @@
-import { stateOfMainDisplay } from "./stateOfMainDisplay";
+import type { MainDisplayState } from "./stateOfMainDisplay";
+import type { ParametersState } from "@/parameters/stateOfParameters";
 import { resize } from "./resize";
 
-export function setupMainDisplay() : void
+export function setupMainDisplay(stateOfMainDisplay : MainDisplayState, stateOfParameters : ParametersState) : void
 {
-//	stateOfMainDisplay.canvasElement = document.querySelector<HTMLElement>("canvas")! as HTMLCanvasElement;
-	stateOfMainDisplay.canvasRenderingContext = stateOfMainDisplay.canvasElement.value!.getContext("2d")!;
+	if (stateOfMainDisplay.canvasElement.value == null)
+	{
+		return;
+	}
 
-//	window.addEventListener("mousemove", mouseMoveInCanvas);
-//	window.addEventListener("dblclick", doubleClickInCanvas);
-//	window.addEventListener("wheel", wheelMoveInCanvas);
-//	window.addEventListener("mousedown", mousedownInCanvas);
-//	window.addEventListener("mouseup", mouseupInCanvas);
-	resize();
+	stateOfMainDisplay.canvasRenderingContext = stateOfMainDisplay.canvasElement.value.getContext("2d");
+	if (stateOfMainDisplay.canvasRenderingContext == null)
+	{
+		return;
+	}
+
+	resize(stateOfMainDisplay, stateOfParameters);
 }
-

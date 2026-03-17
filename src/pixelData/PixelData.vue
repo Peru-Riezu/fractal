@@ -1,6 +1,7 @@
 <script setup lang="ts">
-	import { stateOfPixelData } from './stateOfPixelData';
+	import type { PixelDataState } from './stateOfPixelData';
 
+	const { pixelDataState } = defineProps<{pixelDataState : PixelDataState}>();
 </script>
 
 <template>
@@ -9,15 +10,13 @@
 			Pixel Data (hold alt to hold pixel):
 		</h1>
 		<div id="iteration_count_of_pixel">
-			iteration count: {{ stateOfPixelData.valuesOfEachIteration.value?.length }}
+			iteration count: {{ pixelDataState.valuesOfEachIteration.value?.length }}
 		</div>
 		<div id="abs_value_of_each_iteration">
 			<h1 id="abs_value_of_each_iteration_header">
 				Absolute value after each iteration:
 			</h1>
-			<pre id="values_of_each_iteration">
-{{ stateOfPixelData.valuesOfEachIteration.value?.join("\n") }}
-			</pre>
+			<pre id="values_of_each_iteration">{{ pixelDataState.valuesOfEachIteration.value?.join("\n") }}</pre>
 		</div>
 	</div>
 </template>

@@ -1,25 +1,33 @@
-import { stateOfMainDisplay } from "./stateOfMainDisplay";
-import { stateOfParameters } from "@/parameters/stateOfParameters";
+import type { MainDisplayState } from "./stateOfMainDisplay";
+import type { ParametersState } from "@/parameters/stateOfParameters";
+import { clientPointToComplex } from "./canvasPointer";
+import type {ComplexPoint} from "./complexPlane";
 
-export function mousedownInCanvas(e: MouseEvent) : void
+export function mousedownInCanvas(e: PointerEvent, stateOfMainDisplay : MainDisplayState, stateOfParameters : ParametersState) : void
 {
 	if (e.altKey == true)
 	{
 		return;
 	}
 
-	const rect : DOMRect = stateOfMainDisplay.canvasElement.value!.getBoundingClientRect();
-	const column : number = Math.floor(e.clientX - rect.left);
-	const row : number = Math.floor(e.clientY - rect.top);
-	const currentNormalizedX : number = ((column / (stateOfMainDisplay.canvasElement.value!.clientWidth - 1)) * 2) - 1;
-	const currentNormalizedY : number = ((row / (stateOfMainDisplay.canvasElement.value!.clientHeight - 1)) * -2) + 1;
-	const scaleOfXtoY: number =
-		(1 / stateOfMainDisplay.canvasElement.value!.clientHeight) * stateOfMainDisplay.canvasElement.value!.clientWidth;
-	const currentScaledX : number = currentNormalizedX * (stateOfParameters.scale.value.value / 2) * scaleOfXtoY;
-	const currentScaledY : number = currentNormalizedY * (stateOfParameters.scale.value.value / 2);
+	if (stateOfMainDisplay.canvasElement.value == null)
+	{
+		return;
+	}
 
-	stateOfMainDisplay.xOfPosOnmousedown = currentScaledX + stateOfParameters.xOfOrigin.value.value;
-	stateOfMainDisplay.yOfPosOnmousedown = currentScaledY + stateOfParameters.yOfOrigin.value.value;
+	stateOfMainDisplay.canvasElement.value.setPointerCapture(e.pointerId);
+	const positionOnMousedown : ComplexPoint = clientPointToComplex
+	(
+		e.clientX,
+		e.clientY,
+		stateOfMainDisplay.canvasElement.value,
+		stateOfParameters.scale.value.value,
+		stateOfParameters.xOfOrigin.value.value,
+		stateOfParameters.yOfOrigin.value.value
+	);
+
+	stateOfMainDisplay.xOfPosOnmousedown = positionOnMousedown.x;
+	stateOfMainDisplay.yOfPosOnmousedown = positionOnMousedown.y;
 	stateOfMainDisplay.mousedown = true;
+	stateOfMainDisplay.showFullScreenButton.value = false;
 }
-
