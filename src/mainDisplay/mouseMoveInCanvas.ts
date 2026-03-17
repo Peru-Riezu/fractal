@@ -18,31 +18,18 @@ export function mouseMoveInCanvas(e : MouseEvent) : void
 		return;
 	}
 
-	const rect : DOMRect = stateOfMainDisplay.canvasElement!.getBoundingClientRect();
+	const rect : DOMRect = stateOfMainDisplay.canvasElement.value!.getBoundingClientRect();
 	const column : number = Math.floor(e.clientX - rect.left);
 	const row : number = Math.floor(e.clientY - rect.top);
+	const currentNormalizedX : number = ((column / (stateOfMainDisplay.canvasElement.value!.clientWidth - 1)) * 2) - 1;
+	const currentNormalizedY : number = ((row / (stateOfMainDisplay.canvasElement.value!.clientHeight - 1)) * -2) + 1;
+	const scaleOfXtoY: number =
+		(1 / stateOfMainDisplay.canvasElement.value!.clientHeight) * stateOfMainDisplay.canvasElement.value!.clientWidth;
+	const currentScaledX : number = currentNormalizedX * (stateOfParameters.scale.value.value / 2) * scaleOfXtoY;
+	const currentScaledY : number = currentNormalizedY * (stateOfParameters.scale.value.value / 2);
+	const currentPositonAdjustedX : number = currentScaledX + stateOfParameters.xOfOrigin.value.value;
+	const currentPositonAdjustedY : number = currentScaledY + stateOfParameters.yOfOrigin.value.value;
 
-	if (e.clientX < rect.left || e.clientY < rect.top || e.clientX > rect.right || e.clientY > rect.bottom)
-	{
-		stateOfMainDisplay.mousedown = false;
-		stateOfPixelData.valuesOfEachIteration.value = undefined;
-		document.getElementById("fullscreen_icon")!.style.opacity = "0";
-		return;
-	}
-
-	document.getElementById("fullscreen_icon")!.style.opacity = "1";
-	if (stateOfMainDisplay.goingFullScreen == true || document.fullscreenElement == document.getElementById("main_display"))
-	{
-		document.getElementById("fullscreen_icon")!.style.opacity = "0";
-	}
-
-	const currentNormalizedX : number = ((column / (stateOfMainDisplay.canvasElement!.clientWidth - 1)) * 2) - 1;
-	const currentNormalizedY : number = ((row / (stateOfMainDisplay.canvasElement!.clientHeight - 1)) * -2) + 1;
-	const scaleOfXtoY: number = (1 / stateOfMainDisplay.canvasElement!.clientHeight) * stateOfMainDisplay.canvasElement!.clientWidth;
-	const currentScaledX : number = currentNormalizedX * (stateOfParameters.scale / 2) * scaleOfXtoY;
-	const currentScaledY : number = currentNormalizedY * (stateOfParameters.scale / 2);
-	const currentPositonAdjustedX : number = currentScaledX + stateOfParameters.xOfOrigin;
-	const currentPositonAdjustedY : number = currentScaledY + stateOfParameters.yOfOrigin;
-
+	stateOfMainDisplay.showFullScreenButton.value = true;
 	stateOfPixelData.valuesOfEachIteration.value = getIterationsOfPoint(currentPositonAdjustedX, currentPositonAdjustedY);
 }

@@ -1,9 +1,12 @@
+import { type Ref, ref } from "vue";
+
 export const stateOfMainDisplay :
 {
 	goingFullScreen : boolean,
-	canvasElement : HTMLCanvasElement | null,
-	stopSpiningWheelCoroutine : boolean,
-	wheelSpiningCoroutineUp : boolean,
+	canvasElement : Ref<HTMLCanvasElement | null>,
+	frameIsRendering : Ref<boolean>,
+	showFullScreenButton : Ref<boolean>,
+	onFullscreenMode : Ref<boolean>,
 	dprAdjustedWidthOfCanvas : number | null,
 	dprAdjustedHeigthOfCanvas : number | null,
 	renderingWorker : Worker | null,
@@ -15,9 +18,10 @@ export const stateOfMainDisplay :
 =
 {
 	goingFullScreen: false,
-	canvasElement: null,
-	stopSpiningWheelCoroutine: true,
-	wheelSpiningCoroutineUp: false,
+	canvasElement: ref(null),
+	showFullScreenButton: ref(false),
+	onFullscreenMode: ref(false),
+	frameIsRendering: ref(false),
 	dprAdjustedHeigthOfCanvas: null,
 	dprAdjustedWidthOfCanvas: null,
 	renderingWorker: null,

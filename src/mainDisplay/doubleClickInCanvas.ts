@@ -9,7 +9,7 @@ export function doubleClickInCanvas(e : MouseEvent) : void
 		return;
 	}
 
-	const rect : DOMRect = stateOfMainDisplay.canvasElement!.getBoundingClientRect();
+	const rect : DOMRect = stateOfMainDisplay.canvasElement.value!.getBoundingClientRect();
 	const column : number = Math.floor(e.clientX - rect.left);
 	const row : number = Math.floor(e.clientY - rect.top);
 
@@ -20,19 +20,20 @@ export function doubleClickInCanvas(e : MouseEvent) : void
 		return;
 	}
 
-	const currentNormalizedX : number = ((column / (stateOfMainDisplay.canvasElement!.clientWidth - 1)) * 2) - 1;
-	const currentNormalizedY : number = ((row / (stateOfMainDisplay.canvasElement!.clientHeight - 1)) * -2) + 1;
-	const scaleOfXtoY: number = (1 / stateOfMainDisplay.canvasElement!.clientHeight) * stateOfMainDisplay.canvasElement!.clientWidth;
-	const currentScaledX : number = currentNormalizedX * (stateOfParameters.scale / 2) * scaleOfXtoY;
-	const currentScaledY : number = currentNormalizedY * (stateOfParameters.scale / 2);
-	const currentPositonAdjustedX : number = currentScaledX + stateOfParameters.xOfOrigin;
-	const currentPositonAdjustedY : number = currentScaledY + stateOfParameters.yOfOrigin;
-	const changeInXToOrigin : number = stateOfParameters.xOfOrigin - currentPositonAdjustedX;
-	const changeInYToOrigin : number = stateOfParameters.yOfOrigin - currentPositonAdjustedY;
+	const currentNormalizedX : number = ((column / (stateOfMainDisplay.canvasElement.value!.clientWidth - 1)) * 2) - 1;
+	const currentNormalizedY : number = ((row / (stateOfMainDisplay.canvasElement.value!.clientHeight - 1)) * -2) + 1;
+	const scaleOfXtoY: number =
+		(1 / stateOfMainDisplay.canvasElement.value!.clientHeight) * stateOfMainDisplay.canvasElement.value!.clientWidth;
+	const currentScaledX : number = currentNormalizedX * (stateOfParameters.scale.value.value / 2) * scaleOfXtoY;
+	const currentScaledY : number = currentNormalizedY * (stateOfParameters.scale.value.value / 2);
+	const currentPositonAdjustedX : number = currentScaledX + stateOfParameters.xOfOrigin.value.value;
+	const currentPositonAdjustedY : number = currentScaledY + stateOfParameters.yOfOrigin.value.value;
+	const changeInXToOrigin : number = stateOfParameters.xOfOrigin.value.value - currentPositonAdjustedX;
+	const changeInYToOrigin : number = stateOfParameters.yOfOrigin.value.value - currentPositonAdjustedY;
 
-	stateOfParameters.scale *= 0.5;
-	stateOfParameters.scaleInput.value = stateOfParameters.scale.toString();
-	stateOfParameters.xOfOriginInput.value = (stateOfParameters.xOfOrigin - (changeInXToOrigin * 0.5)).toString();
-	stateOfParameters.yOfOriginInput.value = (stateOfParameters.yOfOrigin - (changeInYToOrigin * 0.5)).toString();
+	stateOfParameters.scale.update(stateOfParameters.scale.value.value * 0.5);
+	
+	stateOfParameters.xOfOrigin.update(stateOfParameters.xOfOrigin.value.value - (changeInXToOrigin * 0.5));
+	stateOfParameters.yOfOrigin.update(stateOfParameters.yOfOrigin.value.value - (changeInYToOrigin * 0.5));
 }
 

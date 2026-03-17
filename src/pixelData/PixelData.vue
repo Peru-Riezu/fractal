@@ -8,18 +8,16 @@
 		<h1 id="pixel_data_header">
 			Pixel Data (hold alt to hold pixel):
 		</h1>
-		<div id="summary_pixel_data">
-			<div id="iteration_count_of_pixel">
-				iteration count: {{ stateOfPixelData.valuesOfEachIteration.value?.length }}
-			</div>
+		<div id="iteration_count_of_pixel">
+			iteration count: {{ stateOfPixelData.valuesOfEachIteration.value?.length }}
 		</div>
 		<div id="abs_value_of_each_iteration">
 			<h1 id="abs_value_of_each_iteration_header">
 				Absolute value after each iteration:
 			</h1>
-			<div id="values_of_each_iteration">
-				{{ stateOfPixelData.valuesOfEachIteration.value?.join("\n") }}
-			</div>
+			<pre id="values_of_each_iteration">
+{{ stateOfPixelData.valuesOfEachIteration.value?.join("\n") }}
+			</pre>
 		</div>
 	</div>
 </template>

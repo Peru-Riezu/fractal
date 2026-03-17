@@ -1,15 +1,10 @@
 import { stateOfMainDisplay } from "./stateOfMainDisplay";
 import { stateOfParameters } from "@/parameters/stateOfParameters";
-import { spinWheel } from "./spinWheel";
 
 export function render() : void
 {
-	stateOfMainDisplay.stopSpiningWheelCoroutine = false;
-	if (stateOfMainDisplay.wheelSpiningCoroutineUp == false)
-	{
-		stateOfMainDisplay.wheelSpiningCoroutineUp = true;
-		spinWheel();
-	}
+	stateOfMainDisplay.frameIsRendering.value = true;
+
 	if (stateOfMainDisplay.renderingWorker != null)
 	{
 		stateOfMainDisplay.renderingWorker.terminate();
@@ -28,7 +23,7 @@ export function render() : void
 				const img : ImageData =
 					new ImageData(pixels, stateOfMainDisplay.dprAdjustedWidthOfCanvas!, stateOfMainDisplay.dprAdjustedHeigthOfCanvas!);
 
-				stateOfMainDisplay.stopSpiningWheelCoroutine = true;
+				stateOfMainDisplay.frameIsRendering.value = false;
 				stateOfMainDisplay.canvasRenderingContext!.putImageData(img, 0, 0);
 			}
 		);
@@ -42,12 +37,12 @@ export function render() : void
 				buffer: buffer,
 				dprAdjustedWidth: stateOfMainDisplay.dprAdjustedWidthOfCanvas,
 				dprAdjustedHeigth: stateOfMainDisplay.dprAdjustedHeigthOfCanvas,
-				scale: stateOfParameters.scale,
-				x: stateOfParameters.xOfOrigin,
-				y: stateOfParameters.yOfOrigin,
-				scapeRadius: stateOfParameters.scapeRadius,
-				maxIterations: stateOfParameters.maxIterations,
-				antialiasLevel: stateOfParameters.antialiasLevel
+				scale: stateOfParameters.scale.value.value,
+				x: stateOfParameters.xOfOrigin.value.value,
+				y: stateOfParameters.yOfOrigin.value.value,
+				scapeRadius: stateOfParameters.scapeRadius.value.value,
+				maxIterations: stateOfParameters.maxIterations.value.value,
+				antialiasLevel: stateOfParameters.antialiasLevel.value.value
 			},
 			[buffer]
 		)

@@ -36,13 +36,4 @@
 		display: flex;
 		flex-direction: row;
 	}
-
-	#summary_pixel_data
-	{
-		display: flex;
-		flex-direction: row;
-		justify-items: center;
-		justify-content: space-evenly;
-		align-items: center;
-	}
 </style>

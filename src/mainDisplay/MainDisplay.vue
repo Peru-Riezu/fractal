@@ -3,24 +3,45 @@
 	import { setupMainDisplay } from './setUpMainDisplay';
 	import { onFullscreenChange } from './onFullscreenChange';
 	import { onMounted } from 'vue';
+	import {resize} from './resize';
+	import {mousedownInCanvas} from './mousedownInCanvas';
+	import { mouseLeftCanvas } from './mouseLeftCanvas';
+	import {mouseMoveInCanvas} from './mouseMoveInCanvas';
+	import {mouseupInCanvas} from './mouseupInCanvas';
+	import {wheelMoveInCanvas} from './wheelMoveInCanvas';
+	import {doubleClickInCanvas} from './doubleClickInCanvas';
+	import { stateOfMainDisplay } from './stateOfMainDisplay';
 
 	onMounted(setupMainDisplay);
-	window.addEventListener("resize", setupMainDisplay);
+	window.addEventListener("resize", resize);
 	window.addEventListener('fullscreenchange', onFullscreenChange);
 </script>
 
 <template>
 	<div id="main_display">
-		<div id="loading_icon">
+		<div
+			v-show="stateOfMainDisplay.frameIsRendering.value"
+			id="loading_icon"
+		>
 			❌
 		</div>
 		<button
+			v-show="stateOfMainDisplay.showFullScreenButton.value && stateOfMainDisplay.onFullscreenMode.value == false"
 			id="fullscreen_icon"
 			@click="toggleFullscreen"
 		>
 			📺
 		</button>
-		<canvas id="canvas" />
+		<canvas
+			id="canvas"
+			:ref="stateOfMainDisplay.canvasElement"
+			@pointerdown="mousedownInCanvas"
+			@pointermove="mouseMoveInCanvas"
+			@pointerup="mouseupInCanvas"
+			@pointerleave="mouseLeftCanvas"
+			@dblclick="doubleClickInCanvas"
+			@wheel.prevent="wheelMoveInCanvas"
+		/>
 	</div>
 </template>
 
@@ -31,11 +52,22 @@
 		flex-direction: column;
 	}
 
+	@keyframes spin
+	{
+		from
+		{
+			transform: rotate(0deg);
+		}
+		to
+		{
+			transform: rotate(360deg);
+		}
+	}
+
 	#loading_icon
 	{
+		animation: spin 5s linear infinite;
 		position: fixed;
-		opacity: 0;
-		rotate: 0deg;
 		filter:
 			grayscale(1) brightness(0)
 			drop-shadow(1px 0 0 white)
@@ -49,9 +81,7 @@
 	#fullscreen_icon
 	{
 		position: fixed;
-		opacity: 0;
 		font-size: 20px;
-		z-index: 1;
 		margin-top: 10px;
 		margin-left: calc(90vw - 45px);
 	}
@@ -61,5 +91,11 @@
 		background: black;
 		width: 90vw;
 		height: 70vh;
+	}
+
+	#main_display:fullscreen #canvas
+	{
+		width: 100vw;
+		height: 100vh;
 	}
 </style>

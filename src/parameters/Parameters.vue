@@ -5,99 +5,17 @@
 
 	watch
 		(
-			stateOfParameters.scaleInput,
-			() =>
-			{
-				if ((stateOfParameters.scaleInput.value.trim() !== "") && Number.isFinite(Number(stateOfParameters.scaleInput.value)))
-				{
-					stateOfParameters.scale = Number(stateOfParameters.scaleInput.value);
-					render();
-				}
-			}
-		)
-
-	watch
-		(
-			stateOfParameters.yOfOriginInput,
-			() =>
-			{
-				if ((stateOfParameters.yOfOriginInput.value.trim() !== "") && Number.isFinite(Number(stateOfParameters.yOfOriginInput.value)))
-				{
-					stateOfParameters.yOfOrigin = Number(stateOfParameters.yOfOriginInput.value);
-					render();
-				}
-			}
-		)
-
-	watch
-		(
-			stateOfParameters.xOfOriginInput,
-			() =>
-			{
-				if ((stateOfParameters.xOfOriginInput.value.trim() !== "") && Number.isFinite(Number(stateOfParameters.xOfOriginInput.value)))
-				{
-					stateOfParameters.xOfOrigin = Number(stateOfParameters.xOfOriginInput.value);
-					render();
-				}
-			}
-		)
-
-	watch
-		(
-			stateOfParameters.scapeRadiusInput,
-			() =>
-			{
-				if 
-					(
-						(stateOfParameters.scapeRadiusInput.value.trim() !== "")
-						&&
-						Number.isFinite(Number(stateOfParameters.scapeRadiusInput.value)
-						)
-					)
-				{
-					stateOfParameters.scapeRadius = Number(stateOfParameters.scapeRadiusInput.value);
-					render();
-				}
-			}
-		)
-
-	watch
-		(
-			stateOfParameters.maxIterationsInput,
-			() =>
-			{
-				if
-					(
-						(stateOfParameters.maxIterationsInput.value.trim() !== "")
-						&&
-						Number.isFinite(Number(stateOfParameters.maxIterationsInput.value)
-						)
-					)
-				{
-					stateOfParameters.maxIterations = Number(stateOfParameters.maxIterationsInput.value);
-					render();
-				}
-			}
-		)
-
-	watch
-		(
-			stateOfParameters.antialiasLevelInput,
-			() =>
-			{
-				if
-					(
-						(stateOfParameters.antialiasLevelInput.value.trim() !== "")
-						&&
-						Number.isFinite(Number(stateOfParameters.antialiasLevelInput.value)
-						)
-					)
-				{
-					stateOfParameters.antialiasLevel = Number(stateOfParameters.antialiasLevelInput.value);
-					render();
-				}
-			}
-		)
+			[
+				stateOfParameters.antialiasLevel.value,
+				stateOfParameters.maxIterations.value,
+				stateOfParameters.scale.value,
+				stateOfParameters.scapeRadius.value,
+				stateOfParameters.scapeRadius.value,
+				stateOfParameters.xOfOrigin.value,
+				stateOfParameters.yOfOrigin.value
+			],
+			render
+		);
 
 </script>
 
@@ -112,9 +30,11 @@
 			</label>
 			<input
 				id="scale_input"
-				v-model="stateOfParameters.scaleInput.value"
+				v-model="stateOfParameters.scale.input.value"
 				type="text"
 				placeholder="2"
+				@input="stateOfParameters.scale.updateIfInputValid()"
+				@blur="stateOfParameters.scale.normalizeInput()"
 			>
 		</form>
 		<form id="origin_form">
@@ -128,9 +48,11 @@
 				</label>
 				<input
 					id="origin_x_input"
-					v-model="stateOfParameters.xOfOriginInput.value"
+					v-model="stateOfParameters.xOfOrigin.input.value"
 					type="text"
 					placeholder="0"
+					@input="stateOfParameters.xOfOrigin.updateIfInputValid()"
+					@blur="stateOfParameters.xOfOrigin.normalizeInput()"
 				>
 			</div>
 			<div id="origin_y_label_input_pair">
@@ -142,9 +64,11 @@
 				</label>
 				<input
 					id="origin_y_input"
-					v-model="stateOfParameters.yOfOriginInput.value"
+					v-model="stateOfParameters.yOfOrigin.input.value"
 					type="text"
 					placeholder="0"
+					@input="stateOfParameters.yOfOrigin.updateIfInputValid()"
+					@blur="stateOfParameters.yOfOrigin.normalizeInput()"
 				>
 			</div>
 		</form>
@@ -157,9 +81,11 @@
 			</label>
 			<input
 				id="scape_radius_input"
-				v-model="stateOfParameters.scapeRadiusInput.value"
+				v-model="stateOfParameters.scapeRadius.input.value"
 				type="text"
 				placeholder="2"
+				@input="stateOfParameters.scapeRadius.updateIfInputValid()"
+				@blur="stateOfParameters.scapeRadius.normalizeInput()"
 			>
 		</form>
 		<form id="max_iterations_form">
@@ -171,9 +97,11 @@
 			</label>
 			<input
 				id="max_iterations_input"
-				v-model="stateOfParameters.maxIterationsInput.value"
+				v-model="stateOfParameters.maxIterations.input.value"
 				type="text"
 				placeholder="150"
+				@input="stateOfParameters.maxIterations.updateIfInputValid()"
+				@blur="stateOfParameters.maxIterations.normalizeInput()"
 			>
 		</form>
 		<form id="antialiasing_level_form">
@@ -185,9 +113,11 @@
 			</label>
 			<input
 				id="antialiasing_level_input"
-				v-model="stateOfParameters.antialiasLevelInput.value"
+				v-model="stateOfParameters.antialiasLevel.input.value"
 				type="text"
 				placeholder="0"
+				@input="stateOfParameters.antialiasLevel.updateIfInputValid()"
+				@blur="stateOfParameters.antialiasLevel.normalizeInput()"
 			>
 		</form>
 	</div>
