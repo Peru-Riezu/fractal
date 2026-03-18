@@ -1,26 +1,8 @@
 <script setup lang="ts">
-	import type { NumericField } from './NumericField';
+	import {type ParametersState} from './stateOfParameters';
+	import {type  ModelRef } from 'vue';
 
-	const
-		{
-			scaleField,
-			xOfOriginField,
-			yOfOriginField,
-			scapeRadiusField,
-			maxIterationsField,
-			antialiasLevelField
-		} =
-			defineProps
-				<
-					{
-						scaleField : NumericField,
-						xOfOriginField : NumericField,
-						yOfOriginField : NumericField,
-						scapeRadiusField : NumericField,
-						maxIterationsField : NumericField,
-						antialiasLevelField : NumericField
-					}
-				>();
+	const parametersState : ModelRef<ParametersState> = defineModel<ParametersState>({required: true});
 
 </script>
 
@@ -35,12 +17,12 @@
 			</label>
 			<input
 				id="scale_input"
-				:value="scaleField.input.value"
+				v-model="parametersState.scale.input.value"
 				type="text"
 				inputmode="decimal"
 				placeholder="2"
-				@input="scaleField.updateIfInputValid()"
-				@blur="scaleField.normalizeInput()"
+				@input="parametersState.scale.updateIfInputValid()"
+				@blur="parametersState.scale.normalizeInput()"
 			>
 		</div>
 		<fieldset id="origin_form">
@@ -54,12 +36,12 @@
 				</label>
 				<input
 					id="origin_x_input"
-					:value="xOfOriginField.input.value"
+					v-model="parametersState.xOfOrigin.input.value"
 					type="text"
 					inputmode="decimal"
 					placeholder="0"
-					@input="xOfOriginField.updateIfInputValid()"
-					@blur="xOfOriginField.normalizeInput()"
+					@input="parametersState.xOfOrigin.updateIfInputValid()"
+					@blur="parametersState.xOfOrigin.normalizeInput()"
 				>
 			</div>
 			<div id="origin_y_label_input_pair">
@@ -71,12 +53,12 @@
 				</label>
 				<input
 					id="origin_y_input"
-					:value="yOfOriginField.input.value"
+					v-model="parametersState.yOfOrigin.input.value"
 					type="text"
 					inputmode="decimal"
 					placeholder="0"
-					@input="yOfOriginField.updateIfInputValid()"
-					@blur="yOfOriginField.normalizeInput()"
+					@input="parametersState.yOfOrigin.updateIfInputValid()"
+					@blur="parametersState.yOfOrigin.normalizeInput()"
 				>
 			</div>
 		</fieldset>
@@ -89,12 +71,12 @@
 			</label>
 			<input
 				id="scape_radius_input"
-				:value="scapeRadiusField.input.value"
+				v-model="parametersState.scapeRadius.input.value"
 				type="text"
 				inputmode="decimal"
 				placeholder="2"
-				@input="scapeRadiusField.updateIfInputValid()"
-				@blur="scapeRadiusField.normalizeInput()"
+				@input="parametersState.scapeRadius.updateIfInputValid()"
+				@blur="parametersState.scapeRadius.normalizeInput()"
 			>
 		</div>
 		<div id="max_iterations_form">
@@ -106,12 +88,12 @@
 			</label>
 			<input
 				id="max_iterations_input"
-				:value="maxIterationsField.input.value"
+				v-model="parametersState.maxIterations.input.value"
 				type="text"
 				inputmode="numeric"
 				placeholder="150"
-				@input="maxIterationsField.updateIfInputValid()"
-				@blur="maxIterationsField.normalizeInput()"
+				@input="parametersState.maxIterations.updateIfInputValid()"
+				@blur="parametersState.maxIterations.normalizeInput()"
 			>
 		</div>
 		<div id="antialiasing_level_form">
@@ -123,12 +105,12 @@
 			</label>
 			<input
 				id="antialiasing_level_input"
-				:value="antialiasLevelField.input.value"
+				v-model="parametersState.antialiasLevel.input.value"
 				type="text"
 				inputmode="numeric"
 				placeholder="0"
-				@input="antialiasLevelField.updateIfInputValid()"
-				@blur="antialiasLevelField.normalizeInput()"
+				@input="parametersState.antialiasLevel.updateIfInputValid()"
+				@blur="parametersState.antialiasLevel.normalizeInput()"
 			>
 		</div>
 	</div>

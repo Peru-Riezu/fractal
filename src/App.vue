@@ -17,19 +17,12 @@
 			Fractal
 		</h1>
 		<MainDisplay
-			:main-display-state="mainDisplayState"
-			:parameters-state="parametersState"
-			:pixel-data-state="pixelDataState"
+			v-model:pixel-data-state="pixelDataState"
+			v-model:main-display-state="mainDisplayState"
+			v-model:parameters-state="parametersState"
 		/>
 		<div id="footer">
-			<Parameters
-				:scale-field="parametersState.scale"
-				:x-of-origin-field="parametersState.xOfOrigin"
-				:y-of-origin-field="parametersState.yOfOrigin"
-				:scape-radius-field="parametersState.scapeRadius"
-				:max-iterations-field="parametersState.maxIterations"
-				:antialias-level-field="parametersState.antialiasLevel"
-			/>
+			<Parameters v-model="parametersState" />
 			<PixelData :pixel-data-state="pixelDataState" />
 		</div>
 	</div>

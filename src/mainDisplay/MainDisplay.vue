@@ -2,7 +2,7 @@
 	import { toggleFullscreen } from './toggleFullscreen';
 	import { setupMainDisplay } from './setUpMainDisplay';
 	import { onFullscreenChange } from './onFullscreenChange';
-	import { onMounted, onUnmounted, watch } from 'vue';
+	import { onMounted, onUnmounted, watch, type ModelRef } from 'vue';
 	import { resize } from './resize';
 	import { mousedownInCanvas } from './mousedownInCanvas';
 	import { mouseLeftCanvas } from './mouseLeftCanvas';
@@ -15,96 +15,91 @@
 	import type { PixelDataState } from '@/pixelData/stateOfPixelData';
 	import { render } from './render';
 
-	const { mainDisplayState, parametersState, pixelDataState } = defineProps
-	<
-		{
-			mainDisplayState : MainDisplayState,
-			parametersState : ParametersState,
-			pixelDataState : PixelDataState
-		}
-	>();
+	const mainDisplayState : ModelRef<MainDisplayState> = defineModel<MainDisplayState>('main-display-state', {required: true});
+	const parametersState : ModelRef<ParametersState> = defineModel<ParametersState>('parameters-state', {required: true});
+	const pixelDataState : ModelRef<PixelDataState> = defineModel<PixelDataState>('pixel-data-state', {required: true});
 
 	let resizeObserver : ResizeObserver | null = null;
 
 	watch
 		(
 			() =>
-			[
-				parametersState.antialiasLevel.value.value,
-				parametersState.maxIterations.value.value,
-				parametersState.scale.value.value,
-				parametersState.scapeRadius.value.value,
-				parametersState.xOfOrigin.value.value,
-				parametersState.yOfOrigin.value.value
-			],
-			() => render(mainDisplayState, parametersState)
+				[
+					parametersState.value.antialiasLevel.value.value,
+					parametersState.value.maxIterations.value.value,
+					parametersState.value.scale.value.value,
+					parametersState.value.scapeRadius.value.value,
+					parametersState.value.xOfOrigin.value.value,
+					parametersState.value.yOfOrigin.value.value
+				],
+			() => render(mainDisplayState.value, parametersState.value)
 		);
 
 	function handleFullscreenChange() : void
 	{
-		onFullscreenChange(mainDisplayState);
+		onFullscreenChange(mainDisplayState.value);
 	}
 
 	function handlePointerDown(e : PointerEvent) : void
 	{
-		mousedownInCanvas(e, mainDisplayState, parametersState);
+		mousedownInCanvas(e, mainDisplayState.value, parametersState.value);
 	}
 
 	function handlePointerMove(e : PointerEvent) : void
 	{
-		mouseMoveInCanvas(e, mainDisplayState, parametersState, pixelDataState);
+		mouseMoveInCanvas(e, mainDisplayState.value, parametersState.value, pixelDataState.value);
 	}
 
 	function handlePointerUp(e : PointerEvent) : void
 	{
-		mouseupInCanvas(e, mainDisplayState);
+		mouseupInCanvas(e, mainDisplayState.value);
 	}
 
 	function handlePointerLeave(e : PointerEvent) : void
 	{
-		mouseLeftCanvas(e, mainDisplayState, pixelDataState);
+		mouseLeftCanvas(e, mainDisplayState.value, pixelDataState.value);
 	}
 
 	function handleDoubleClick(e : MouseEvent) : void
 	{
-		doubleClickInCanvas(e, mainDisplayState, parametersState);
+		doubleClickInCanvas(e, mainDisplayState.value, parametersState.value);
 	}
 
 	function handleWheel(e : WheelEvent) : void
 	{
-		wheelMoveInCanvas(e, mainDisplayState, parametersState);
+		wheelMoveInCanvas(e, mainDisplayState.value, parametersState.value);
 	}
 
 	onMounted
-			(
-				() =>
+		(
+			() =>
+			{
+				setupMainDisplay(mainDisplayState.value, parametersState.value);
+				document.addEventListener('fullscreenchange', handleFullscreenChange);
+				if (mainDisplayState.value.canvasElement.value != null)
 				{
-					setupMainDisplay(mainDisplayState, parametersState);
-					document.addEventListener('fullscreenchange', handleFullscreenChange);
-					if (mainDisplayState.canvasElement.value != null)
-					{
-						resizeObserver = new ResizeObserver(() => resize(mainDisplayState, parametersState));
-						resizeObserver.observe(mainDisplayState.canvasElement.value);
-					}
+					resizeObserver = new ResizeObserver(() => resize(mainDisplayState.value, parametersState.value));
+					resizeObserver.observe(mainDisplayState.value.canvasElement.value);
 				}
-			);
+			}
+		);
 
 	onUnmounted
 		(
-				() =>
-				{
-					resizeObserver?.disconnect();
-					resizeObserver = null;
-					document.removeEventListener('fullscreenchange', handleFullscreenChange);
-					mainDisplayState.renderingWorker?.terminate();
-					mainDisplayState.renderingWorker = null;
-					mainDisplayState.canvasRenderingContext = null;
-					mainDisplayState.frameIsRendering.value = false;
-					mainDisplayState.showFullScreenButton.value = false;
-					mainDisplayState.onFullscreenMode.value = false;
-					mainDisplayState.mousedown = false;
-				}
-			);
+			() =>
+			{
+				resizeObserver?.disconnect();
+				resizeObserver = null;
+				document.removeEventListener('fullscreenchange', handleFullscreenChange);
+				mainDisplayState.value.renderingWorker?.terminate();
+				mainDisplayState.value.renderingWorker = null;
+				mainDisplayState.value.canvasRenderingContext = null;
+				mainDisplayState.value.frameIsRendering.value = false;
+				mainDisplayState.value.showFullScreenButton.value = false;
+				mainDisplayState.value.onFullscreenMode.value = false;
+				mainDisplayState.value.mousedown = false;
+			}
+		);
 </script>
 
 <template>
